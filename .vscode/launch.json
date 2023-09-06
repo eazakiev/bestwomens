@@ -1,0 +1,41 @@
+// {
+//     // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+//     // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+//     // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+//     "version": "0.2.0",
+//     "configurations": [
+
+//     {"name":"Python: Django","type":"python","request":"launch","program":"/home/evgeny/My_disk/Python/My_projects/bestwomens/sitewomen/manage.py","args":["runserver"],"django":true,"justMyCode":true},
+
+//         {
+//             "name": "Python: текущий файл",
+//             "type": "python",
+//             "request": "launch",
+//             "program": "${file}",
+//             "console": "integratedTerminal",
+//             "justMyCode": true
+//         }
+//     ]
+// }
+
+
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "sitewomen",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "program": "/home/evgeny/My_disk/Python/My_projects/bestwomens/sitewomen/manage.py",
+            "args": [
+                "runserver"
+            ],
+            "django": true
+        }
+    ]
+}
