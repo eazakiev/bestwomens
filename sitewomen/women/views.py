@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.template.loader import render_to_string
 
-from .models import Women
+from .models import Category, Women
 
 
 menu = [{'title': "О сайте", 'url_name': "about"},
@@ -18,12 +18,6 @@ data_db = [
         'content': '<h1>англ. Angelina Jolie</h1>, при рождении Войт (англ. Voight), ранее Джоли Питт (англ. Jolie Pitt); род. 4 июня 1975, Лос-Анджелес, Калифорния, США) — американская актриса кино, телевидения и озвучивания, кинорежиссёр, сценаристка, продюсер, фотомодель, посол доброй воли ООН. Обладательница премии «Оскар», трёх премий «Золотой глобус» (первая актриса в истории, три года подряд выигравшая премию) и двух «Премий Гильдии киноактёров США».', 'is_published': True},
     {'id': 2, 'title': 'Марго Робби', 'content': '(англ. Margot Elise Robbie; род. 2 июля 1990, Дэлби, Квинсленд, Австралия) — австралийская актриса и кинопродюсер. Двукратная номинантка на премию «Оскар», пятикратная номинантка на премию BAFTA, пятикратная номинантка на премию Гильдии киноактёров США, трёхкратная номинантка на премию «Золотой глобус» и семикратная номинантка на премию Critics Choice Movie Award».', 'is_published': False},
     {'id': 3, 'title': 'Джулия Робертс', 'content': '(англ. Julia Fiona Roberts; род. 28 октября 1967, Смирна, Джорджия)— американская актриса кино и телевидения, продюсер. Первый прорыв в карьере Робертс произошёл после выхода фильмов «Мистическая пицца» и «Стальные магнолии», за последний из которых она была удостоена «Золотого глобуса» и первой номинации на премию «Оскар».', 'is_published': True},
-]
-
-cats_db = [
-    {'id': 1, 'name': 'Актрисы'},
-    {'id': 2, 'name': 'Певицы'},
-    {'id': 3, 'name': 'Спортсменки'},
 ]
 
 
@@ -72,12 +66,14 @@ def login(request):
     return HttpResponse(f"Авторизация")
 
 
-def show_category(request, cat_id):
+def show_category(request, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Women.published.filter(cat_id=category.pk)
     data = {
-        'title': 'Отображение по рубрикам',
+        'title': f'Рубрика: {category.name}',
         'menu': menu,
-        'posts': data_db,
-        'cat_selected': cat_id,
+        'posts': posts,
+        'cat_selected': category.pk,
     }
     return render(request, 'women/index.html', context=data)
 

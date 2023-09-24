@@ -47,6 +47,10 @@ class Women(models.Model):
         """Возвращает строковое представление модели Women."""
         return self.title
 
+    def get_absolute_url(self):
+        """Возвращает путь до модели Women."""
+        return reverse("post", kwargs={"post_slug": self.slug})
+
     class Meta:
         """Метаданные модели Women, устанавливает название модели."""
         verbose_name = 'Известные женщины'
@@ -73,7 +77,7 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         """ Формирует адрес для каждой конкретной записи (slug/id). """
-        return reverse("post", kwargs={"post_slug": self.slug})
+        return reverse("category", kwargs={"cat_slug": self.slug})
 
 
 class Meta:
