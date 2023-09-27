@@ -38,6 +38,7 @@ class Women(models.Model):
         choices=Status.choices, default=Status.DRAFT, verbose_name='Публикация')
     cat = models.ForeignKey(  # внешний ключ, хранит идентификатор категории, с которым связана запись
         'Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категории')
+    tags = models.ManyToManyField('TagPost', blank=True, related_name='tags')
     # photo = models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото')
 
     objects = models.Manager()
@@ -85,3 +86,17 @@ class Meta:
     verbose_name = 'Категории'
     verbose_name_plural = 'Категории'
     ordering = ['id']
+
+
+class TagPost(models.Model):
+    """Класс, описывающий модель TagPost. Реализация функционhttp://192.168.1.1/ала
+    тегирования записей.
+    Args:
+        models (class): _description_
+    """
+    tag = models.CharField(max_length=100, db_index=True, verbose_name='Тег')
+    slug = models.SlugField(max_length=255, unique=True, db_index=True)
+
+    def __str__(self):
+        """Возвращает строковое представление модели TagPost."""
+        return self.tag
