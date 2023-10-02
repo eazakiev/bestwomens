@@ -39,6 +39,8 @@ class Women(models.Model):
     cat = models.ForeignKey(  # внешний ключ, хранит идентификатор категории, с которым связана запись
         'Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категории')
     tags = models.ManyToManyField('TagPost', blank=True, related_name='tags')
+    husband = models.OneToOneField(
+        'Husband', on_delete=models.SET_NULL, null=True, blank=True, related_name='wuman')
     # photo = models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото')
 
     objects = models.Manager()
@@ -89,7 +91,7 @@ class Meta:
 
 
 class TagPost(models.Model):
-    """Класс, описывающий модель TagPost. Реализация функционhttp://192.168.1.1/ала
+    """Класс, описывающий модель TagPost. Реализация функционала
     тегирования записей.
     Args:
         models (class): _description_
@@ -100,3 +102,20 @@ class TagPost(models.Model):
     def __str__(self):
         """Возвращает строковое представление модели TagPost."""
         return self.tag
+
+    def get_absolute_url(self):
+        """Формирует адрес для каждой конкретной записи тега"""
+        return reverse("tag", kwargs={"tag_slug": self.slug})
+
+
+class Husband(models.Model):
+    """Класс, описывающий модель Husbands.
+    Args:
+        models (class): _description_
+    """
+    name = models.CharField(max_length=100)
+    age = models.IntegerField(null=True)
+
+    def __str__(self):
+        """Возвращает строковое представление модели Husbands."""
+        return self.name
