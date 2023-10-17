@@ -35,12 +35,13 @@ class Women(models.Model):
     time_update = models.DateTimeField(
         auto_now=True, verbose_name='Время изменения')
     is_published = models.BooleanField(
-        choices=Status.choices, default=Status.DRAFT, verbose_name='Публикация')
+        choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)), default=Status.DRAFT, verbose_name='Публикация')
     cat = models.ForeignKey(  # внешний ключ, хранит идентификатор категории, с которым связана запись
         'Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категории')
-    tags = models.ManyToManyField('TagPost', blank=True, related_name='tags')
+    tags = models.ManyToManyField(
+        'TagPost', blank=True, related_name='tags', verbose_name='Теги')
     husband = models.OneToOneField(
-        'Husband', on_delete=models.SET_NULL, null=True, blank=True, related_name='wuman')
+        'Husband', on_delete=models.SET_NULL, null=True, blank=True, related_name='wuman', verbose_name='Муж')
     # photo = models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото')
 
     objects = models.Manager()
@@ -82,12 +83,11 @@ class Category(models.Model):
         """ Формирует адрес для каждой конкретной записи (slug/id). """
         return reverse("category", kwargs={"cat_slug": self.slug})
 
-
-class Meta:
-    """Метаданные модели Category, устанавливает название модели."""
-    verbose_name = 'Категории'
-    verbose_name_plural = 'Категории'
-    ordering = ['id']
+    class Meta:
+        """Метаданные модели Category, устанавливает название модели."""
+        verbose_name = 'Категории'
+        verbose_name_plural = 'Категории'
+        ordering = ['id']
 
 
 class TagPost(models.Model):
@@ -115,6 +115,7 @@ class Husband(models.Model):
     """
     name = models.CharField(max_length=100)
     age = models.IntegerField(null=True)
+    m_count = models.IntegerField(blank=True, default=0)
 
     def __str__(self):
         """Возвращает строковое представление модели Husbands."""

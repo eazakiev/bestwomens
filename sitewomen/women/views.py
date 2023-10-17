@@ -13,16 +13,8 @@ menu = [{'title': "О сайте", 'url_name': "about"},
         ]
 
 
-data_db = [
-    {'id': 1, 'title': 'Анджелина Джоли',
-        'content': '<h1>англ. Angelina Jolie</h1>, при рождении Войт (англ. Voight), ранее Джоли Питт (англ. Jolie Pitt); род. 4 июня 1975, Лос-Анджелес, Калифорния, США) — американская актриса кино, телевидения и озвучивания, кинорежиссёр, сценаристка, продюсер, фотомодель, посол доброй воли ООН. Обладательница премии «Оскар», трёх премий «Золотой глобус» (первая актриса в истории, три года подряд выигравшая премию) и двух «Премий Гильдии киноактёров США».', 'is_published': True},
-    {'id': 2, 'title': 'Марго Робби', 'content': '(англ. Margot Elise Robbie; род. 2 июля 1990, Дэлби, Квинсленд, Австралия) — австралийская актриса и кинопродюсер. Двукратная номинантка на премию «Оскар», пятикратная номинантка на премию BAFTA, пятикратная номинантка на премию Гильдии киноактёров США, трёхкратная номинантка на премию «Золотой глобус» и семикратная номинантка на премию Critics Choice Movie Award».', 'is_published': False},
-    {'id': 3, 'title': 'Джулия Робертс', 'content': '(англ. Julia Fiona Roberts; род. 28 октября 1967, Смирна, Джорджия)— американская актриса кино и телевидения, продюсер. Первый прорыв в карьере Робертс произошёл после выхода фильмов «Мистическая пицца» и «Стальные магнолии», за последний из которых она была удостоена «Золотого глобуса» и первой номинации на премию «Оскар».', 'is_published': True},
-]
-
-
 def index(request):
-    posts = Women.published.all()
+    posts = Women.published.all().select_related('cat')
 
     data = {
         'title': 'Главная страница',
@@ -68,7 +60,8 @@ def login(request):
 
 def show_category(request, cat_slug):
     category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk)
+    posts = Women.published.filter(cat_id=category.pk).select_related('cat')
+
     data = {
         'title': f'Рубрика: {category.name}',
         'menu': menu,
@@ -86,7 +79,9 @@ def page_not_found(request, exception):
 def show_tag_postlist(request, tag_slug):
     """Получение списка постов по тегу"""
     tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+    posts = tag.tags.filter(
+        is_published=Women.Status.PUBLISHED).select_related('cat')
+
     data = {
         'title': f"Тег: {tag.tag}",
         'menu': menu,
