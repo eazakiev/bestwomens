@@ -33,7 +33,13 @@ class Women(models.Model):
         max_length=255, unique=True, db_index=True, verbose_name="URL"
     )
     content = models.TextField(blank=True, verbose_name="Контент")
-    photo = models.ImageField(upload_to="photos/%Y/%m/%d/", verbose_name="Фото")
+    photo = models.ImageField(
+        upload_to="photos/%Y/%m/%d/",
+        default=None,
+        blank=True,
+        null=True,
+        verbose_name="Фото",
+    )
     time_create = models.DateTimeField(auto_now_add=True, verbose_name="Время создания")
     time_update = models.DateTimeField(auto_now=True, verbose_name="Время изменения")
     is_published = models.BooleanField(
@@ -138,3 +144,7 @@ class Husband(models.Model):
     def __str__(self):
         """Возвращает строковое представление модели Husbands."""
         return self.name
+
+
+class UploadFile(models.Model):
+    file = models.FileField(upload_to="uploads_model")

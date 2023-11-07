@@ -17,22 +17,34 @@ class AddPostForm(forms.ModelForm):
         """Конструктор формы для добавления поста"""
         super().__init__(*args, **kwargs)
         self.fields["cat"].empty_label = "Категория не выбрана"
+        self.fields["husband"].empty_label = "Не замужем"
 
     class Meta:
         """Метаданные для формы добавления поста"""
 
         model = Women
-        fields = ["title", "slug", "content", "photo", "is_published", "cat", "husband"]
+        fields = [
+            "title",
+            "slug",
+            "content",
+            "photo",
+            "is_published",
+            "cat",
+            "husband",
+            "tags",
+        ]
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-input"}),
             "content": forms.Textarea(attrs={"cols": 50, "rows": 5}),
         }
 
     def clean_title(self):
-        """Проверка наличия загруженного поста"""
+        """Собственный валидатор для поля title, который проверяет наличия
+        загруженного поста, не позволял вводить строку более 50 символов
+        """
         title = self.cleaned_data["title"]
-        if len(title) > 200:
-            raise ValidationError("Длина превышает 200 символов")
+        if len(title) > 50:
+            raise ValidationError("Длина превышает 50 символов")
         return title
 
 
@@ -103,3 +115,7 @@ class ContactForm(forms.Form):
         label="Содержание", widget=forms.Textarea(attrs={"cols": 60, "rows": 10})
     )
     captcha = CaptchaField(label="Введите ответ")
+
+
+# class UploadFileForm(forms.Form):
+#     file = forms.ImageField(label="Изображение")

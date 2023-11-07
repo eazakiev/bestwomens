@@ -20,7 +20,7 @@
 			<li class="logo"><a href="{% url 'home' %}"><div class="logo"></div></a></li>
 
 {% for m in menu %}
-	{% comment %} {% if not forloop.last %}<li>{% else %}<li class="last">{% endif %} {% endcomment %}
+{% if not forloop.last %}<li>{% else %}<li class="last">{% endif %}
 		<li><a href="{% url m.url_name %}">{{m.title}}</a></li>
 {% endfor %}
 {% if request.user.is_authenticated %}
@@ -57,14 +57,12 @@
 {% endif %}
 {% endfor %}
 
-		{% comment %} {% show_categories cat_selected %} {% endcomment %}
-
 		<li class="share">
 		<p>Наш канал</p>
 		<a class="share-yt" href="https://www.youtube.com/channel/UChuUF3vVD_1kyIN5po31eXw" target="_blank" rel="nofollow"></a>
 		</li>
 
-		<li>{% show_all_tags %}</li>
+		{% comment %} <li>{% show_all_tags %}</li> {% endcomment %}
 	</ul>
 </td>
 <!-- Конец Sidebar'а -->
