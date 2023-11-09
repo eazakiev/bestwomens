@@ -149,12 +149,12 @@ class WomenCategory(DataMixin, ListView):
             cat__slug=self.kwargs["cat_slug"], is_published=True
         ).select_related("cat")
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, **kwargs):
         """Получение контекста для списка категорий"""
         context = super().get_context_data(**kwargs)
-        c = Category.objects.get(slug=self.kwargs["cat_slug"])
+        cat = Category.objects.get(slug=self.kwargs["cat_slug"])
         c_def = self.get_user_context(
-            title="Категория - " + str(c.name), cat_selected=c.pk
+            title="Категория - " + str(cat.name), cat_selected=cat.pk
         )
         return context | c_def
 

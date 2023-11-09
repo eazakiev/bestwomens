@@ -6,14 +6,13 @@
 {% if tags %}
 <ul class="tags-list">
     <li>Теги:</li>
-    {% for t in tags  %}
+    {% for t in tags %}
     <li><a href="{{t.get_absolute_url}}">{{t.tag}}</a></li>
     {% endfor %}
 </ul>
 {% endif %}
 {% endwith %}
-{% endblock  %}
-
+{% endblock %}
 
 {% block content %}
 <h1>{{post.title}}</h1>
@@ -23,4 +22,4 @@
 {% endif %}
 
 {{post.content|linebreaks}}
-{% endblock  %}
+{% endblock %}
