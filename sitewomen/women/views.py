@@ -118,7 +118,7 @@ class ShowPost(DataMixin, DetailView):
         DetailView (class): _description_
     """
 
-    model = Women
+    # model = Women
     template_name = "women/post.html"
     slug_url_kwarg = "post_slug"
     # pk_url_kwarg = 'post_pk'
@@ -129,6 +129,9 @@ class ShowPost(DataMixin, DetailView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title=context["post"])
         return context | c_def
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
 class WomenCategory(DataMixin, ListView):
@@ -213,15 +216,26 @@ def logout_user(request):
     return redirect("login")
 
 
-def show_tag_postlist(request, tag_slug):
-    """Получение списка постов по тегу"""
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("cat")
+class TagPostList(ListView):
+    """Класс получение списка постов по тегу
+    Args:
+        DataMixin (class): _description_
+        LoginView (class): _description_
+    """
 
-    data = {
-        "title": f"Тег: {tag.tag}",
-        "menu": menu,
-        "posts": posts,
-        "cat_selected": None,
-    }
-    return render(request, "women/index.html", context=data)
+    template_name = "women/index.html"
+    context_object_name = "posts"
+    allow_empty = False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag = TagPost.objects.get(slug=self.kwargs["tag_slug"])
+        context["title"] = "Тег: " + tag.tag
+        context["menu"] = menu
+        context["cat_selected"] = None
+        return context
+
+    def get_queryset(self):
+        return Women.published.filter(
+            tags__slug=self.kwargs["tag_slug"]
+        ).select_related("cat")
