@@ -1,7 +1,7 @@
 from django.http import Http404, HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.views.generic import ListView, DetailView, CreateView, FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout, login
@@ -20,16 +20,14 @@ class WomenHome(DataMixin, ListView):
         ListView (class): _description_
     """
 
-    model = Women
     template_name = "women/index.html"
     context_object_name = "posts"
+    cat_selected = 0
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Получение контекста для главной страницы сайта"""
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title="Главная страница")
-        # dict(list(context.items()) + list(c_def.items()))
-        return context | c_def
+        return self.get_mixin_context(context, title="Главная страница")
 
     def get_queryset(self):
         """Получение объектов для постов"""
@@ -52,7 +50,6 @@ def about(request):
     """О сайте"""
     contact_list = Women.objects.all()
     # paginator = Paginator(contact_list, 3)  # Show 3 contacts per page.
-
     page_number = request.GET.get("page")
     # page_obj = paginator.get_page(page_number) 'page_obj': page_obj,
     return render(request, "women/about.html", {"title": "О сайте", "menu": menu})
@@ -75,8 +72,19 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     def get_context_data(self, *, object_list=None, **kwargs):
         """Получение контекста для добавления статьи"""
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title="Добавление статьи")
-        return context | c_def
+        return self.get_mixin_context(context, title="Добавление статьи")
+
+
+class UpdatePage(DataMixin, UpdateView):
+    model = Women
+    fields = ["title", "content", "photo", "is_published", "cat"]
+    template_name = "women/addpage.html"
+    success_url = reverse_lazy("home")
+    title_page = "Редактирование статьи"
+    # extra_context = {
+    #     "menu": menu,
+    #     "title": "Редактирование статьи",
+    # }
 
 
 class ContactFormView(DataMixin, FormView):
@@ -94,8 +102,7 @@ class ContactFormView(DataMixin, FormView):
     def get_context_data(self, *, object_list=None, **kwargs):
         """Получение контекста для шаблона, формы контактов"""
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title="Обратная связь")
-        return context | c_def
+        return self.get_mixin_context(context, title="Обратная связь")
 
     def form_valid(self, form):
         """
@@ -118,17 +125,14 @@ class ShowPost(DataMixin, DetailView):
         DetailView (class): _description_
     """
 
-    # model = Women
     template_name = "women/post.html"
-    slug_url_kwarg = "post_slug"
-    # pk_url_kwarg = 'post_pk'
+    slug_url_kwarg = "post_slug"  # pk_url_kwarg = 'post_pk'
     context_object_name = "post"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Получение контекста для представления статьи"""
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title=context["post"])
-        return context | c_def
+        return self.get_mixin_context(context, title=context["post"].title)
 
     def get_object(self, queryset=None):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
@@ -141,7 +145,6 @@ class WomenCategory(DataMixin, ListView):
         ListView (class): _description_
     """
 
-    model = Women
     template_name = "women/index.html"
     context_object_name = "posts"
     allow_empty = False
@@ -156,10 +159,9 @@ class WomenCategory(DataMixin, ListView):
         """Получение контекста для списка категорий"""
         context = super().get_context_data(**kwargs)
         cat = Category.objects.get(slug=self.kwargs["cat_slug"])
-        c_def = self.get_user_context(
-            title="Категория - " + str(cat.name), cat_selected=cat.pk
+        return self.get_mixin_context(
+            context, title="Категория - " + cat.name, cat_selected=cat.pk
         )
-        return context | c_def
 
 
 class RegisterUser(DataMixin, CreateView):
@@ -176,8 +178,7 @@ class RegisterUser(DataMixin, CreateView):
     def get_context_data(self, *, object_list=None, **kwargs):
         """Получение контекста для регистрации пользователя"""
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title="Регистрация")
-        return context | c_def
+        return self.get_mixin_context(context, title="Регистрация")
 
     def form_valid(self, form):
         """
@@ -202,8 +203,7 @@ class LoginUser(DataMixin, LoginView):
     def get_context_data(self, *, object_list=None, **kwargs):
         """Получение контекста для авторизации пользователя"""
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title="Авторизация")
-        return context | c_def
+        return self.get_mixin_context(context, title="Авторизация")
 
     def get_success_url(self):
         """Получение страницы после авторизации пользователя"""
@@ -216,7 +216,7 @@ def logout_user(request):
     return redirect("login")
 
 
-class TagPostList(ListView):
+class TagPostList(DataMixin, ListView):
     """Класс получение списка постов по тегу
     Args:
         DataMixin (class): _description_
@@ -230,12 +230,21 @@ class TagPostList(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         tag = TagPost.objects.get(slug=self.kwargs["tag_slug"])
-        context["title"] = "Тег: " + tag.tag
-        context["menu"] = menu
-        context["cat_selected"] = None
-        return context
+        return self.get_mixin_context(context, title="Тег: " + tag.tag)
 
     def get_queryset(self):
         return Women.published.filter(
             tags__slug=self.kwargs["tag_slug"]
         ).select_related("cat")
+
+
+def confidential(request):
+    """О политике конфиденциальности"""
+    return render(
+        request, "women/confidential.html", {"title": "О сайте", "menu": menu}
+    )
+
+
+def terms(request):
+    """О пользовательском соглашении"""
+    return render(request, "women/terms.html", {"title": "О сайте", "menu": menu})
