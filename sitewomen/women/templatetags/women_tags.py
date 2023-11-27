@@ -2,15 +2,16 @@ from django import template
 from women.models import Category, TagPost
 import women.views as views
 from django.db.models import Count
+from women.utils import menu
 
 register = template.Library()
 
 
-@register.inclusion_tag('women/list_categories.html')
+@register.inclusion_tag("women/list_categories.html")
 def show_categories(cat_selected=0):
     """Показать список категорий."""
-    cats = Category.objects.annotate(total=Count('posts')).filter(total__gt=0)
-    return {'cats': cats, "cat_selected": cat_selected}
+    cats = Category.objects.annotate(total=Count("posts")).filter(total__gt=0)
+    return {"cats": cats, "cat_selected": cat_selected}
 
 
 @register.inclusion_tag("women/list_tags.html")
@@ -26,6 +27,11 @@ def get_categories(filter=None):
         return Category.objects.all()
     else:
         return Category.objects.filter(pk=filter)
+
+
+@register.simple_tag
+def get_menu():
+    return menu
 
 
 # @register.inclusion_tag("women/list_categories.html")
