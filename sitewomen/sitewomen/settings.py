@@ -166,3 +166,4 @@ CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.math_challenge"
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+LOGIN_URL = 'users:login'

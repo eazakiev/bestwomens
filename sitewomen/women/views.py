@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, login
 from women.forms import RegisterUserForm, ContactForm
 from .utils import DataMixin
@@ -46,9 +47,10 @@ class WomenHome(DataMixin, ListView):
 #     return render(request, "women/index.html", context=context)
 
 
+# @login_required(login_url=reverse_lazy("users:login"))
 def about(request):
     """О сайте"""
-    contact_list = Women.objects.all()
+    contact_list = Women.published.all()
     # paginator = Paginator(contact_list, 3)  # Show 3 contacts per page.
     page_number = request.GET.get("page")
     # page_obj = paginator.get_page(page_number) 'page_obj': page_obj,
@@ -65,14 +67,21 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
     form_class = AddPostForm
     template_name = "women/addpage.html"
+    title_page = 'Добавление статьи'
     success_url = reverse_lazy("home")
-    login_url = reverse_lazy("home")
-    raise_exception = True
+    # login_url = reverse_lazy("home")
+    # raise_exception = True
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Получение контекста для добавления статьи"""
         context = super().get_context_data(**kwargs)
         return self.get_mixin_context(context, title="Добавление статьи")
+
+    def form_valid(self, form):
+        """Обработка формы добавления статьи"""
+        w = form.save(commit=False)
+        w.author = self.request.user
+        return super().form_valid(form)
 
 
 class UpdatePage(DataMixin, UpdateView):
