@@ -173,30 +173,30 @@ class WomenCategory(DataMixin, ListView):
         )
 
 
-class RegisterUser(DataMixin, CreateView):
-    """Класс для регистрации пользователя
-    Args:
-        DataMixin (class): _description_
-        CreateView (class): _description_
-    """
+# class RegisterUser(DataMixin, CreateView):
+#     """Класс для регистрации пользователя
+#     Args:
+#         DataMixin (class): _description_
+#         CreateView (class): _description_
+#     """
 
-    form_class = RegisterUserForm
-    template_name = "women/register.html"
-    success_url = reverse_lazy("login")
+#     form_class = RegisterUserForm
+#     template_name = "women/register.html"
+#     success_url = reverse_lazy("login")
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        """Получение контекста для регистрации пользователя"""
-        context = super().get_context_data(**kwargs)
-        return self.get_mixin_context(context, title="Регистрация")
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         """Получение контекста для регистрации пользователя"""
+#         context = super().get_context_data(**kwargs)
+#         return self.get_mixin_context(context, title="Регистрация")
 
-    def form_valid(self, form):
-        """
-        Обработка формы регистрации пользователя, вызывается если
-        пользователь корректно заполнил все поля контактной формы
-        """
-        user = form.save()
-        login(self.request, user)
-        return redirect("home")
+#     def form_valid(self, form):
+#         """
+#         Обработка формы регистрации пользователя, вызывается если
+#         пользователь корректно заполнил все поля контактной формы
+#         """
+#         user = form.save()
+#         login(self.request, user)
+#         return redirect("home")
 
 
 class LoginUser(DataMixin, LoginView):
