@@ -1,4 +1,6 @@
 class FourDigitYearConverter:
+    """Конвертер для ввода двух цифр в число"""
+
     regex = "[0-9]{4}"
 
     def to_python(self, value):

@@ -11,6 +11,8 @@ menu = [
 
 
 class DataMixin:
+    """Класс добавления функционала для модели данных."""
+
     title_page = None
     cat_selected = None
     extra_context = {}
@@ -27,6 +29,7 @@ class DataMixin:
         #     self.extra_context["menu"] = menu
 
     def get_mixin_context(self, context, **kwargs):
+        """Получение контекста пользователя."""
         if self.title_page:
             context["title"] = self.title_page
 

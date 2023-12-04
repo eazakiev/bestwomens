@@ -48,61 +48,6 @@ class AddPostForm(forms.ModelForm):
         return title
 
 
-class RegisterUserForm(UserCreationForm):
-    """Класс формы для регистрации пользователя
-    Args:
-        UserCreationForm (class): _description_
-    """
-
-    username = forms.CharField(
-        label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
-    )
-    first_name = forms.CharField(
-        label="Имя", widget=forms.TextInput(attrs={"class": "form-input"})
-    )
-    last_name = forms.CharField(
-        label="Фамилия", widget=forms.TextInput(attrs={"class": "form-input"})
-    )
-    email = forms.EmailField(
-        label="Email", widget=forms.EmailInput(attrs={"class": "form-input"})
-    )
-    password1 = forms.CharField(
-        label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
-    )
-    password2 = forms.CharField(
-        label="Повтор пароля", widget=forms.PasswordInput(attrs={"class": "form-input"})
-    )
-    captcha = CaptchaField(label="Введите ответ")
-
-    class Meta:
-        """Метаданные для формы регистрации пользователя"""
-
-        model = User
-        fields = (
-            "username",
-            "first_name",
-            "last_name",
-            "email",
-            "password1",
-            "password2",
-        )
-
-
-class LoginUserForm(AuthenticationForm):
-    """Класс формы для авторизации пользователя
-    Args:
-        AuthenticationForm (class): _description_
-    """
-
-    username = forms.CharField(
-        label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
-    )
-    password = forms.CharField(
-        label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
-    )
-    captcha = CaptchaField(label="Введите ответ")
-
-
 class ContactForm(forms.Form):
     """Класс формы для отправки сообщения
     Args:

@@ -6,10 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout, login
-from women.forms import RegisterUserForm, ContactForm
+from women.forms import ContactForm
 from .utils import DataMixin
 from django.core.paginator import Paginator
-from women.forms import AddPostForm, LoginUserForm
+from women.forms import AddPostForm
 from .models import Category, Women
 from .utils import *
 
@@ -67,7 +67,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
     form_class = AddPostForm
     template_name = "women/addpage.html"
-    title_page = 'Добавление статьи'
+    title_page = "Добавление статьи"
     success_url = reverse_lazy("home")
     # login_url = reverse_lazy("home")
     # raise_exception = True
@@ -171,58 +171,6 @@ class WomenCategory(DataMixin, ListView):
         return self.get_mixin_context(
             context, title="Категория - " + cat.name, cat_selected=cat.pk
         )
-
-
-# class RegisterUser(DataMixin, CreateView):
-#     """Класс для регистрации пользователя
-#     Args:
-#         DataMixin (class): _description_
-#         CreateView (class): _description_
-#     """
-
-#     form_class = RegisterUserForm
-#     template_name = "women/register.html"
-#     success_url = reverse_lazy("login")
-
-#     def get_context_data(self, *, object_list=None, **kwargs):
-#         """Получение контекста для регистрации пользователя"""
-#         context = super().get_context_data(**kwargs)
-#         return self.get_mixin_context(context, title="Регистрация")
-
-#     def form_valid(self, form):
-#         """
-#         Обработка формы регистрации пользователя, вызывается если
-#         пользователь корректно заполнил все поля контактной формы
-#         """
-#         user = form.save()
-#         login(self.request, user)
-#         return redirect("home")
-
-
-class LoginUser(DataMixin, LoginView):
-    """Класс для авторизации пользователя
-    Args:
-        DataMixin (class): _description_
-        LoginView (class): _description_
-    """
-
-    form_class = LoginUserForm
-    template_name = "women/login.html"
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        """Получение контекста для авторизации пользователя"""
-        context = super().get_context_data(**kwargs)
-        return self.get_mixin_context(context, title="Авторизация")
-
-    def get_success_url(self):
-        """Получение страницы после авторизации пользователя"""
-        return reverse_lazy("home")
-
-
-def logout_user(request):
-    """Получение перенаправления после авторизации пользователя"""
-    logout(request)
-    return redirect("login")
 
 
 class TagPostList(DataMixin, ListView):

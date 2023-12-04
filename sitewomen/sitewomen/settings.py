@@ -166,4 +166,9 @@ CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.math_challenge"
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
-LOGIN_URL = 'users:login'
+LOGIN_URL = "users:login"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "users.authentication.EmailAuthBackend",
+]

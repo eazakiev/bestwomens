@@ -3,14 +3,23 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
-from women.forms import RegisterUserForm
-from django.contrib.auth import logout
+from django.views.generic import CreateView, UpdateView
+from .forms import ProfileUserForm, RegisterUserForm
+from django.contrib.auth import logout, login
 from django.urls import reverse_lazy
-
-from users.forms import LoginUserForm
+from django.shortcuts import redirect
+from .forms import LoginUserForm
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class LoginUser(LoginView):
+    """Класс для авторизации пользователя
+    Args:
+        DataMixin (class): _description_
+        LoginView (class): _description_
+    """
+
     form_class = LoginUserForm
     template_name = "users/login.html"
     extra_context = {"title": "Авторизация"}
@@ -21,33 +30,39 @@ class LoginUser(LoginView):
 
 
 def logout_user(request):
+    """Получение перенаправления после авторизации пользователя"""
+
     logout(request)
     return HttpResponseRedirect(reverse("users:login"))
 
 
-def register(request):
-    if request.method == "POST":
-        form = RegisterUserForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)  # создание объекта без сохранения в БД
-            user.set_password(form.cleaned_data["password"])
-            user.save()
-            return render(request, "users/register_done.html")
-    else:
-        form = RegisterUserForm()
-    return render(request, "users/register.html", {"form": form})
+class RegisterUser(CreateView):
+    """Класс для регистрации пользователя
+    Args:
+        DataMixin (class): _description_
+        CreateView (class): _description_
+    """
+
+    form_class = RegisterUserForm
+    template_name = "users/register.html"
+    extra_context = {"title": "Регистрация"}
+    success_url = reverse_lazy("users:login")
 
 
-# class RegisterUser(DataMixin, CreateView):
-#     """Класс для регистрации пользователя
-#     Args:
-#         DataMixin (class): _description_
-#         CreateView (class): _description_
-#     """
+class ProfileUser(LoginRequiredMixin, UpdateView):
+    """Класс для получения страницы с профилем пользователя"""
 
-#     form_class = RegisterUserForm
-#     template_name = "women/register.html"
-#     success_url = reverse_lazy("login")
+    model = get_user_model()
+    form_class = ProfileUserForm
+    template_name = "users/profile.html"
+    extra_context = {"title": "Профиль пользователя"}
+
+    def get_success_url(self):
+        return reverse_lazy("users:profile")
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
 
 #     def get_context_data(self, *, object_list=None, **kwargs):
 #         """Получение контекста для регистрации пользователя"""
