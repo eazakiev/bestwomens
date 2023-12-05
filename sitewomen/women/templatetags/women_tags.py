@@ -31,6 +31,7 @@ def get_categories(filter=None):
 
 @register.simple_tag
 def get_menu():
+    """Получение меню."""
     return menu
 
 

@@ -85,6 +85,7 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
 
 class UpdatePage(DataMixin, UpdateView):
+    """Класс для редактирования статьи"""
     model = Women
     fields = ["title", "content", "photo", "is_published", "cat"]
     template_name = "women/addpage.html"
