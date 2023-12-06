@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import (
+    LoginView,
+    PasswordChangeView,
+)
 from django.views.generic import CreateView, UpdateView
-from .forms import ProfileUserForm, RegisterUserForm
+from .forms import ProfileUserForm, RegisterUserForm, UserPasswordChangeForm
 from django.contrib.auth import logout, login
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
@@ -58,22 +60,17 @@ class ProfileUser(LoginRequiredMixin, UpdateView):
     extra_context = {"title": "Профиль пользователя"}
 
     def get_success_url(self):
+        """Получение страницы с профилем пользователя"""
         return reverse_lazy("users:profile")
 
     def get_object(self, queryset=None):
+        """Получение объектов для регистрации пользователя"""
         return self.request.user
 
 
-#     def get_context_data(self, *, object_list=None, **kwargs):
-#         """Получение контекста для регистрации пользователя"""
-#         context = super().get_context_data(**kwargs)
-#         return self.get_mixin_context(context, title="Регистрация")
-
-# def form_valid(self, form):
-#     """
-#     Обработка формы регистрации пользователя, вызывается если
-#     пользователь корректно заполнил все поля контактной формы
-#     """
-#     user = form.save()
-#     login(self.request, user)
-#     return redirect("home")
+class UserPasswordChange(PasswordChangeView):
+    """Класс для изменения пароля пользователя."""
+    form_class = UserPasswordChangeForm
+    success_url = reverse_lazy("users:password_change_done")
+    template_name = "users/password_change_form.html"
+    extra_context = {"title": "Изменение пароля"}
